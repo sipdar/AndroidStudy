@@ -2,4 +2,9 @@
     <string name="app_name">Test</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
+    <string name="question_text">Ask a question</string>
+    <string name="true_button">True</string>
+    <string name="false_button">false</string>
+    <string name="correct_toast">Correct</string>
+    <string name="inCorrect_toast">Incorrect</string>
 </resources>
