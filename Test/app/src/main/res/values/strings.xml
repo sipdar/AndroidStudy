@@ -2,9 +2,15 @@
     <string name="app_name">Test</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
-    <string name="question_text">Ask a question</string>
+    <string name="question_One">A question one</string>
+    <string name="question_Two">A question two</string>
+    <string name="question_three">A question three</string>
+    <string name="question_four">A question four</string>
+    <string name="question_five">A question five</string>
+
     <string name="true_button">True</string>
     <string name="false_button">false</string>
+    <string name="next_button">Next</string>
     <string name="correct_toast">Correct</string>
     <string name="inCorrect_toast">Incorrect</string>
 </resources>
