@@ -11,8 +11,9 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.sunny.test.AnswerIsTrue";
-    public static final String TAG = "QuizActivity";
-    public static final String Key_INDEX = "questionIndex";
+    private static final String TAG = "QuizActivity";
+    private static final String Key_INDEX = "questionIndex";
+    public static final int REQUEST_CODE_CHEAT = 0;
 
     private Button trueButton;
     private Button falseButton;
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private Button prevButton;
     private Button cheatButton;
     private TextView questionView;
+
+    private boolean mIsCheater;
 
     private Question[] mQuestions = new Question[]{
         new Question(R.string.question_One, true),
@@ -91,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent newIntent = new Intent(MainActivity.this, DisplayMessageActivity.class);
                 boolean answerIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
-                newIntent.putExtra(EXTRA_MESSAGE,answerIsTrue);
-                startActivity(newIntent);
+                newIntent.putExtra(EXTRA_MESSAGE, answerIsTrue);
+                startActivityForResult(newIntent, REQUEST_CODE_CHEAT);
             }
         });
 
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateQuestionContent(int nextIndex) {
 
         Question question = mQuestions[nextIndex];
+        mIsCheater = false;
         mCurrentIndex = nextIndex;
         questionView.setText(question.getTextResId());
     }
@@ -153,7 +157,9 @@ public class MainActivity extends AppCompatActivity {
     private  void checkQuestionAnswer(boolean answerTrue) {
         boolean questionIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
         int messageId = 0;
-        if (questionIsTrue == answerTrue) {
+        if (mIsCheater) {
+            messageId = R.string.judgment_toast;
+        } else if (questionIsTrue == answerTrue) {
             messageId = R.string.correct_toast;
         } else {
             messageId = R.string.inCorrect_toast;
@@ -177,6 +183,23 @@ public class MainActivity extends AppCompatActivity {
 
         outState.putInt(Key_INDEX, mCurrentIndex);
         Log.d(TAG, String.format("save mCurrentIndex %d", mCurrentIndex));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQUEST_CODE_CHEAT) {
+            return;
+        }
+
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        if (data == null) {
+            return;
+        }
+        mIsCheater = DisplayMessageActivity.wasAnswerShown(data);
     }
 
     //    public void sendMessage(View view) {

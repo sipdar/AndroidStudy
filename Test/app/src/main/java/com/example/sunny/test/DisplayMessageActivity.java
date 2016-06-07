@@ -15,6 +15,7 @@ import org.w3c.dom.Text;
 public class DisplayMessageActivity extends AppCompatActivity {
 
     private Button mShowAnswerButton;
+    private static final String EXTRA_ANSWER_SHOWN = "com.example.sunny.test.AnswerShown";
     private TextView mAnswerTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +34,16 @@ public class DisplayMessageActivity extends AppCompatActivity {
                 } else {
                     mAnswerTextView.setText(R.string.false_button);
                 }
+
+                Intent result = new Intent();
+                result.putExtra(EXTRA_ANSWER_SHOWN, answerIsTrue);
+                setResult(RESULT_OK, result);
             }
         });
+    }
 
-
+    public static boolean wasAnswerShown(Intent result) {
+        return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
 
 }
