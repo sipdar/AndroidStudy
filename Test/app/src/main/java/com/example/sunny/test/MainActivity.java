@@ -1,19 +1,16 @@
 package com.example.sunny.test;
 
 import android.content.Intent;
-import android.inputmethodservice.Keyboard;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.example.sunny.test.MESSAGE";
+    public static final String EXTRA_MESSAGE = "com.example.sunny.test.AnswerIsTrue";
     public static final String TAG = "QuizActivity";
     public static final String Key_INDEX = "questionIndex";
 
@@ -21,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private Button falseButton;
     private Button nextButton;
     private Button prevButton;
+    private Button cheatButton;
     private TextView questionView;
 
     private Question[] mQuestions = new Question[]{
@@ -31,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         new Question(R.string.question_five, true)
     };
 
-    private int currentQuestionIndex;
+    private int mCurrentIndex;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState != null) {
-            currentQuestionIndex = savedInstanceState.getInt(Key_INDEX, 0);
+            mCurrentIndex = savedInstanceState.getInt(Key_INDEX, 0);
 
-            Log.d(TAG, String.format("get currentQuestionIndex %d",currentQuestionIndex));
+            Log.d(TAG, String.format("get mCurrentIndex %d", mCurrentIndex));
 
         }
 
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         nextButton = (Button)findViewById(R.id.next_button);
         prevButton = (Button)findViewById(R.id.prev_button);
         questionView = (TextView)findViewById(R.id.question_id);
-
+        cheatButton = (Button)findViewById(R.id.cheatButton);
 
         trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +86,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        updateQuestionContent(currentQuestionIndex);
+        cheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent newIntent = new Intent(MainActivity.this, DisplayMessageActivity.class);
+                boolean answerIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
+                newIntent.putExtra(EXTRA_MESSAGE,answerIsTrue);
+                startActivity(newIntent);
+            }
+        });
+
+        updateQuestionContent(mCurrentIndex);
     }
 
     @Override
@@ -123,12 +131,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     private  void updateNextQuestionContent() {
-        int index = (currentQuestionIndex + 1) % mQuestions.length;
+        int index = (mCurrentIndex + 1) % mQuestions.length;
         updateQuestionContent(index);
     }
 
     private  void updatePrevQuestionContent() {
-        int index = (currentQuestionIndex - 1) % mQuestions.length;
+        int index = (mCurrentIndex - 1) % mQuestions.length;
         if (index < 0 ){
             index += mQuestions.length;
         }
@@ -138,12 +146,12 @@ public class MainActivity extends AppCompatActivity {
     private void updateQuestionContent(int nextIndex) {
 
         Question question = mQuestions[nextIndex];
-        currentQuestionIndex = nextIndex;
+        mCurrentIndex = nextIndex;
         questionView.setText(question.getTextResId());
     }
 
     private  void checkQuestionAnswer(boolean answerTrue) {
-        boolean questionIsTrue = mQuestions[currentQuestionIndex].isAnswerTrue();
+        boolean questionIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
         int messageId = 0;
         if (questionIsTrue == answerTrue) {
             messageId = R.string.correct_toast;
@@ -167,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(Key_INDEX, currentQuestionIndex);
-        Log.d(TAG, String.format("save currentQuestionIndex %d",currentQuestionIndex));
+        outState.putInt(Key_INDEX, mCurrentIndex);
+        Log.d(TAG, String.format("save mCurrentIndex %d", mCurrentIndex));
     }
 
     //    public void sendMessage(View view) {
