@@ -15,35 +15,60 @@ import org.w3c.dom.Text;
 public class DisplayMessageActivity extends AppCompatActivity {
 
     private Button mShowAnswerButton;
+    private static final String mShownAnswer = "shownAnswer";
     private static final String EXTRA_ANSWER_SHOWN = "com.example.sunny.test.AnswerShown";
+    private static final String ANSWER_isTrue = "com.example.sunny.test.AnswerIsTrue";
+
     private TextView mAnswerTextView;
+    private boolean mAnswerShown;
+    private boolean mAnswerIsTrue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_message);
-        final boolean answerIsTrue = getIntent().getBooleanExtra(MainActivity.EXTRA_MESSAGE, false);
-
         mShowAnswerButton = (Button)findViewById(R.id.showAnswerButton);
         mAnswerTextView = (TextView)findViewById(R.id.answerTextView);
 
-        mShowAnswerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (answerIsTrue) {
-                    mAnswerTextView.setText(R.string.true_button);
-                } else {
-                    mAnswerTextView.setText(R.string.false_button);
-                }
+        if (savedInstanceState != null) {
+            mAnswerShown = savedInstanceState.getBoolean(EXTRA_ANSWER_SHOWN, false);
+            mAnswerIsTrue = savedInstanceState.getBoolean(ANSWER_isTrue, false);
 
-                Intent result = new Intent();
-                result.putExtra(EXTRA_ANSWER_SHOWN, answerIsTrue);
-                setResult(RESULT_OK, result);
-            }
-        });
+            sendResultAndUpdateAnswerTextView();
+
+        } else {
+
+            mAnswerIsTrue = getIntent().getBooleanExtra(MainActivity.EXTRA_MESSAGE, false);
+
+            mShowAnswerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAnswerShown = true;
+                    sendResultAndUpdateAnswerTextView();
+                }
+            });
+        }
+    }
+
+    public  void sendResultAndUpdateAnswerTextView() {
+        if (mAnswerIsTrue) {
+            mAnswerTextView.setText(R.string.true_button);
+        } else {
+            mAnswerTextView.setText(R.string.false_button);
+        }
+
+        Intent result = new Intent();
+        result.putExtra(EXTRA_ANSWER_SHOWN, mAnswerShown);
+        setResult(RESULT_OK, result);
     }
 
     public static boolean wasAnswerShown(Intent result) {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_ANSWER_SHOWN,mAnswerShown);
+        outState.putBoolean(ANSWER_isTrue,mAnswerIsTrue);
+    }
 }

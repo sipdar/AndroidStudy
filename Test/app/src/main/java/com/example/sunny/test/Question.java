@@ -10,6 +10,16 @@ public class Question {
 
     private boolean mAnswerTrue;
 
+    private boolean mCheated;
+
+
+    public boolean isCheated() {
+        return mCheated;
+    }
+
+    public void setCheated(boolean cheated) {
+        mCheated = cheated;
+    }
 
     public boolean isAnswerTrue() {
         return mAnswerTrue;

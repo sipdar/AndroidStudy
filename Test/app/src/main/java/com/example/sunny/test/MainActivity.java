@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.sunny.test.AnswerIsTrue";
     private static final String TAG = "QuizActivity";
     private static final String Key_INDEX = "questionIndex";
+    private static final String USER_IS_CHEATER = "cheater";
     public static final int REQUEST_CODE_CHEAT = 0;
 
     private Button trueButton;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(Key_INDEX, 0);
-
+            mIsCheater = savedInstanceState.getBoolean(USER_IS_CHEATER,false);
             Log.d(TAG, String.format("get mCurrentIndex %d", mCurrentIndex));
 
         }
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     private  void updateNextQuestionContent() {
         int index = (mCurrentIndex + 1) % mQuestions.length;
         updateQuestionContent(index);
+        mIsCheater = false;
     }
 
     private  void updatePrevQuestionContent() {
@@ -144,12 +146,12 @@ public class MainActivity extends AppCompatActivity {
             index += mQuestions.length;
         }
         updateQuestionContent(index);
+        mIsCheater = false;
     }
 
     private void updateQuestionContent(int nextIndex) {
 
         Question question = mQuestions[nextIndex];
-        mIsCheater = false;
         mCurrentIndex = nextIndex;
         questionView.setText(question.getTextResId());
     }
@@ -182,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         outState.putInt(Key_INDEX, mCurrentIndex);
+        outState.putBoolean(USER_IS_CHEATER, mIsCheater);
         Log.d(TAG, String.format("save mCurrentIndex %d", mCurrentIndex));
     }
 
