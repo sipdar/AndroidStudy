@@ -1,8 +1,11 @@
 package com.example.sunny.test;
 
 import android.content.Intent;
+import android.inputmethodservice.Keyboard;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,11 +13,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "com.example.sunny.test.MESSAGE";
+    public static final String EXTRA_MESSAGE = "com.example.sunny.test.MESSAGE";
+    public static final String TAG = "QuizActivity";
+    public static final String Key_INDEX = "questionIndex";
+
     private Button trueButton;
     private Button falseButton;
     private Button nextButton;
+    private Button prevButton;
     private TextView questionView;
+
     private Question[] mQuestions = new Question[]{
         new Question(R.string.question_One, true),
         new Question(R.string.question_Two, false),
@@ -27,12 +35,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG,"on create called");
         setContentView(R.layout.activity_main);
+
+        if (savedInstanceState != null) {
+            currentQuestionIndex = savedInstanceState.getInt(Key_INDEX, 0);
+
+            Log.d(TAG, String.format("get currentQuestionIndex %d",currentQuestionIndex));
+
+        }
+
 
         trueButton = (Button)findViewById(R.id.true_button);
         falseButton = (Button)findViewById(R.id.false_button);
         nextButton = (Button)findViewById(R.id.next_button);
+        prevButton = (Button)findViewById(R.id.prev_button);
         questionView = (TextView)findViewById(R.id.question_id);
+
 
         trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,18 +70,75 @@ public class MainActivity extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateQuestionContent();
+                updateNextQuestionContent();
             }
         });
 
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updatePrevQuestionContent();
+            }
+        });
 
-        updateQuestionContent();
+        questionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateNextQuestionContent();
+            }
+        });
+
+        updateQuestionContent(currentQuestionIndex);
     }
 
-    private void updateQuestionContent() {
-        int index = (currentQuestionIndex+ 1) % mQuestions.length;
-        Question question = mQuestions[index];
-        currentQuestionIndex = index;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG,"on onStart called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG,"on onPause called");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume() called");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop() called");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
+    }
+
+
+    private  void updateNextQuestionContent() {
+        int index = (currentQuestionIndex + 1) % mQuestions.length;
+        updateQuestionContent(index);
+    }
+
+    private  void updatePrevQuestionContent() {
+        int index = (currentQuestionIndex - 1) % mQuestions.length;
+        if (index < 0 ){
+            index += mQuestions.length;
+        }
+        updateQuestionContent(index);
+    }
+
+    private void updateQuestionContent(int nextIndex) {
+
+        Question question = mQuestions[nextIndex];
+        currentQuestionIndex = nextIndex;
         questionView.setText(question.getTextResId());
     }
 
@@ -87,9 +163,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
+        outState.putInt(Key_INDEX, currentQuestionIndex);
+        Log.d(TAG, String.format("save currentQuestionIndex %d",currentQuestionIndex));
+    }
 
-//    public void sendMessage(View view) {
+    //    public void sendMessage(View view) {
 //        Intent intent = new Intent(this, DisplayMessageActivity.class);
 //        EditText editText =  (EditText) findViewById(R.id.edit_message);
 //        String message = editText.getText().toString();
