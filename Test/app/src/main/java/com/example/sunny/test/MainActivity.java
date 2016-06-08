@@ -1,6 +1,7 @@
 package com.example.sunny.test;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.sunny.test.AnswerIsTrue";
     private static final String TAG = "QuizActivity";
     private static final String Key_INDEX = "questionIndex";
+    private static final String Cheat_INDEXS = "questionCheatIndexs";
     private static final String USER_IS_CHEATER = "cheater";
     public static final int REQUEST_CODE_CHEAT = 0;
 
@@ -33,6 +35,14 @@ public class MainActivity extends AppCompatActivity {
         new Question(R.string.question_five, true)
     };
 
+    private boolean[] mCheatIndexs = new boolean[]{
+            false,
+            false,
+            false,
+            false,
+            false
+    };
+
     private int mCurrentIndex;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(Key_INDEX, 0);
             mIsCheater = savedInstanceState.getBoolean(USER_IS_CHEATER,false);
+            mCheatIndexs = savedInstanceState.getBooleanArray(Cheat_INDEXS);
             Log.d(TAG, String.format("get mCurrentIndex %d", mCurrentIndex));
 
         }
@@ -182,9 +193,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        SharedPreferences
         outState.putInt(Key_INDEX, mCurrentIndex);
         outState.putBoolean(USER_IS_CHEATER, mIsCheater);
+        outState.putBooleanArray(Cheat_INDEXS, mCheatIndexs);
         Log.d(TAG, String.format("save mCurrentIndex %d", mCurrentIndex));
     }
 
@@ -203,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         mIsCheater = DisplayMessageActivity.wasAnswerShown(data);
+        mCheatIndexs[mCurrentIndex] = mIsCheater;
     }
 
     //    public void sendMessage(View view) {
