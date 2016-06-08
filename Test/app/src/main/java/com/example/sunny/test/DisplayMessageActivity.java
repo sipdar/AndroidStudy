@@ -1,11 +1,15 @@
 package com.example.sunny.test;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
     private static final String ANSWER_isTrue = "com.example.sunny.test.AnswerIsTrue";
 
     private TextView mAnswerTextView;
+    private TextView mVersionTextView;
     private boolean mAnswerShown;
     private boolean mAnswerIsTrue;
     @Override
@@ -28,6 +33,9 @@ public class DisplayMessageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_display_message);
         mShowAnswerButton = (Button)findViewById(R.id.showAnswerButton);
         mAnswerTextView = (TextView)findViewById(R.id.answerTextView);
+        mVersionTextView = (TextView)findViewById(R.id.versionTextView);
+
+        mVersionTextView.setText(String.format("API %s",Build.VERSION.SDK_INT));
 
         if (savedInstanceState != null) {
             mAnswerShown = savedInstanceState.getBoolean(EXTRA_ANSWER_SHOWN, false);
@@ -38,12 +46,29 @@ public class DisplayMessageActivity extends AppCompatActivity {
         } else {
 
             mAnswerIsTrue = getIntent().getBooleanExtra(MainActivity.EXTRA_MESSAGE, false);
-
             mShowAnswerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mAnswerShown = true;
                     sendResultAndUpdateAnswerTextView();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        int cx = mShowAnswerButton.getWidth() / 2 ;
+                        int cy = mShowAnswerButton.getHeight() / 2;
+
+                        float radius = mShowAnswerButton.getWidth();
+
+                        Animator anim = ViewAnimationUtils.createCircularReveal(mShowAnswerButton, cx, cy, radius, 0);
+                        anim.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                mAnswerTextView.setVisibility(View.VISIBLE);
+                                mShowAnswerButton.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        anim.start();
+
+                    }
                 }
             });
         }
