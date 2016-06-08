@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
     private  void updateNextQuestionContent() {
         int index = (mCurrentIndex + 1) % mQuestions.length;
         updateQuestionContent(index);
-        mIsCheater = false;
     }
 
     private  void updatePrevQuestionContent() {
@@ -157,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
             index += mQuestions.length;
         }
         updateQuestionContent(index);
-        mIsCheater = false;
     }
 
     private void updateQuestionContent(int nextIndex) {
@@ -170,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     private  void checkQuestionAnswer(boolean answerTrue) {
         boolean questionIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
         int messageId = 0;
+        mIsCheater = mCheatIndexs[mCurrentIndex];
         if (mIsCheater) {
             messageId = R.string.judgment_toast;
         } else if (questionIsTrue == answerTrue) {
@@ -193,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SharedPreferences
         outState.putInt(Key_INDEX, mCurrentIndex);
         outState.putBoolean(USER_IS_CHEATER, mIsCheater);
         outState.putBooleanArray(Cheat_INDEXS, mCheatIndexs);
