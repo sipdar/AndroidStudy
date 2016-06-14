@@ -76,7 +76,6 @@ public class CrimeFragment extends Fragment {
         mTitleField = (EditText) view.findViewById(R.id.crime_title);
         mDateButton = (Button) view.findViewById(R.id.crime_date);
         mSolvedCheckBox = (CheckBox) view.findViewById(R.id.crime_solved);
-        Log.i("Crimtitle",mCrime.getTitle());
         mTitleField.setText(mCrime.getTitle());
         mDateButton.setText(mCrime.getDate().toString());
         mSolvedCheckBox.setChecked(mCrime.isSolved());

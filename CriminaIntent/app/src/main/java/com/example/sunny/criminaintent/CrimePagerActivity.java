@@ -9,10 +9,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.List;
 import java.util.UUID;
-public class CrimePagerActivity extends FragmentActivity {
+public class CrimePagerActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
     private List<Crime> mCrimes;
@@ -23,7 +24,6 @@ public class CrimePagerActivity extends FragmentActivity {
         setContentView(R.layout.activity_crime_pager);
 
         UUID crimeId = (UUID)getIntent().getSerializableExtra(CrimeListFragment.EXTRA_CRIME_ID);
-
         mViewPager = (ViewPager)findViewById(R.id.activity_crime_view_pager);
         mCrimes = CrimeLab.get(this).getCrimes();
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -49,11 +49,19 @@ public class CrimePagerActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
 
     public static Intent newIntent(Context context, UUID crimeId) {
         Intent intent = new Intent(context, CrimePagerActivity.class);
         intent.putExtra(CrimeListFragment.EXTRA_CRIME_ID, crimeId);
         return intent;
     }
+
+
 
 }
