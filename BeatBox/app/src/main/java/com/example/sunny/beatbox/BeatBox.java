@@ -14,7 +14,7 @@ import java.util.List;
 
 public class BeatBox {
     private static final  String TAG = "BeatBox";
-    private static final  String SOUND_FOLDER = "simple_sounds";
+    private static final  String SOUND_FOLDER = "sample_sounds";
     private AssetManager mManager;
     private List<Sound>  mSoundList = new ArrayList();
 
@@ -28,7 +28,7 @@ public class BeatBox {
         String[] soundNames;
         try{
             soundNames = mManager.list(SOUND_FOLDER);
-            Log.i(TAG, "loadSounds: soundNames" + soundNames);
+            Log.i(TAG, "loadSounds ============== : soundNames" + soundNames.length);
         } catch (IOException excepiton) {
             Log.e(TAG, "loadSounds: soundNames" + excepiton);
             return;
